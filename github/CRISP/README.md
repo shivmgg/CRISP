@@ -5,7 +5,7 @@
 
 ### Introduction
 
-In this repository you will find a pytorch implementation of CRISP with the CRISP-R variant for three models. 
+In this repository you will find a pytorch implementation of CRISP for three models. 
 
 ### Getting Started
 
