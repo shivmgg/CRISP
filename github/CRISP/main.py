@@ -326,7 +326,7 @@ def get_model(args):
             model.classifier[6] = classifier_layer.cuda()
 
     elif args.arch == "mobilenetv2":
-        ckpt = torch.load('/home/shivam/NUS/personalization/mobilenetv2.pytorch/pretrained/mobilenetv2-c5e733a8.pth')
+        ckpt = torch.load('path/mobilenetv2.pytorch/pretrained/mobilenetv2-c5e733a8.pth')
         fc_weight = ckpt['classifier.weight']
         ckpt['classifier.weight'] = fc_weight.view(
             fc_weight.size(0), fc_weight.size(1), 1, 1)
@@ -450,12 +450,6 @@ def create_column_wise_mask(m, c_out, c_in, k_1, k_2, block_sz):
     n_c = 0
 
     w_copy = torch.randint(0, 2, (c_out, total_ele_left))
-    # print('--> iterating i in total right', total_right)
-    # print('--> iterating j in total left', total_left)
-    # print('--> iterating k1 in block sz', block_sz)
-    # print('--> iterating k2 in block sz', block_sz)
-    # print('--> copying')
-
     for i in range(total_right):
         for j in range(total_left):
             for k1 in range(block_sz):
@@ -648,8 +642,6 @@ def main():
                             )
                         sparse_model.fc = fc_layer.cuda()   
             elif args.arch == 'mobilenetv2':
-                # sparse_model = torch.hub.load('pytorch/vision:v0.10.0', 'mobilenet_v2', pretrained=True)
-                # print(sparse_model)
                 sparse_model = models.__dict__["mobilenetv2_og"]().to(device)
                 for module in sparse_model.modules():
                     if isinstance(module, nn.Linear) and module.out_features == 1000:
@@ -657,11 +649,6 @@ def main():
                                 module.in_features, args.num_classes, bias=False
                             )
                         sparse_model.classifier[1] = fc_layer.cuda()   
-
-
-
-                # sparse_model = (tmodels.resnet18(pretrained = True).to(device))
-                # ckpt = model_zoo.load_url('https://download.pytorch.org/models/vgg16-397923af.pth')
 
             # Create random input tensor
             batch_size, channels, height, width = 1, 3, 224, 224  # Adjust as needed
@@ -749,19 +736,6 @@ def main():
 
                 json.dump(dictionary, outfile)
                 outfile.write('\n')
-
-                # args.model_dir = os.path.join(save_run_dir, "sparsity_" + str(ratio*10))
-                # checkpoint = utils.checkpoint(args)
-                # if is_best:                                    
-                #     state = {
-                #         'state_dict': model_state_dict,
-                #         'best_acc': best_acc_top1,
-                #         'optimizer': optimizer.state_dict(),
-                #         'epoch': epoch + 1,
-                #         # 'overall epoch':
-                #         'sparsity': sparsity * 100,
-                #     }
-                    # checkpoint.save_model(state, epoch + 1, is_best)
                 
                 print('==> Testing Final Model..')
                 validate(val_loader, model, loss_func, args)
